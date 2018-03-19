@@ -1,0 +1,22 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "blog, express, node, ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "james",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookies": "^0.7.1",
+    "express": "^4.16.3",
+    "markdown": "^0.5.0",
+    "mongoose": "^4.7.1",
+    "mysql": "^2.15.0",
+    "nodemon": "^1.17.2",
+    "swig": "^1.4.2"
+  }
+}

@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+{% block main%}
+<div id="app-category">
+    <nav aria-label="breadcrumb" class="mt-20">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">管理首页</a></li>
+                <li class="breadcrumb-item active" aria-current="page">用户列表</li>
+            </ol>
+        </nav>
+        <div>
+            <button type="button"  class="btn btn-success" @click="add" >添加文章</button>
+        </div>
+        <table class="table bg-white mt-20">
+            <thead>
+                <tr>
+                    <th scope="row">ID</th>
+                    <td>所属分类</td>
+                    <td>标题</td>
+                    <td>简介</td>
+                    <td>作者</td>
+                    <td>阅读量</td>
+                    <td>添加时间</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in contents%}
+                    <tr>
+                        <th scope="row">{{item._id.toString()}}</th>
+                        <td>{{item.category.name}}</td>
+                        <td>{{item.title}}</td>
+                        <td>{{item.description}}</td>
+                        <td>{{item.user.username}}</td>
+                        <td>{{item.views}}</td>
+                        <td>{{item.addTime|date('Y年m月d日 H:i:s', -8*60)}}</td>
+                        <td> 
+                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item._id.toString()}}" @click="edit">编辑</button> 
+                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item._id.toString()}}" @click="deleteItem">删除</button> 
+                        </td>
+                    </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+        {% include 'page.html' %}
+</div>
+<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
+<script>
+    new Vue({
+        el: '#app-category',
+        data: {
+            name: '',
+            msg: '',
+            msg_show: false,
+            is_edit: false,
+            url: ''
+        },
+        methods: {
+            submit(){
+                var me = this
+                this.url = this.is_edit ? '/admin/category/edit' : '/admin/category/add'
+                $.ajax({
+                    url: this.url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        name: me.name,
+                        id: this.item_id
+                    },
+                    success: function(res){
+                        me.msg = res.msg
+                        me.msg_show = true
+                        setTimeout(function(){
+                            me.msg_show = false
+                            if(!res.code){
+                                window.location.reload()
+                                me.msg = ''
+                                $('#exampleModal').modal('toggle')
+                                return
+                            }
+                        }, 1000)
+                    }
+                })
+            },
+            add: function(){
+                window.location.href = '/admin/content/add'
+            },
+            deleteItem: function(e){
+                $.ajax({
+                    url: '/admin/content/delete',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: e.toElement.dataset.id
+                    },
+                    success: function(res){
+                        if(!res.code){
+                            window.location.reload()
+                        }
+                    }
+
+                })
+            },
+            edit(e){
+                this.item_id = e.toElement.dataset.id
+                window.location.href = '/admin/content/add?id=' + this.item_id
+            }
+        }
+    })
+</script>
+
+{% endblock%}

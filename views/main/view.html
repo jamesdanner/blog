@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+
+{% block content%}
+    <div class="list-box">
+        <h1>{{content.title}}</h1>
+        <p class="col-default">
+            <span>作者:{{content.user.username}}</span>
+            <span>时间:{{content.addTime|date('Y年m月d日 H:i:s', -8*60)}}</span>
+            <span>阅读:{{content.views}}</span>
+            <span>评论:{{content.comments.length}}</span>
+        </p>
+        <div>
+            {{content.content}}
+        </div>
+    </div>
+    <div class="message-list">
+       <div class="title">
+           <h1>评论</h1>
+           <p>一共有{{content.comments.length}}条评论</p>
+       </div>
+       <div class="user-name">sdfsdf</div>
+       {% if userInfo._id %}
+       <div class="input" id="comments">
+           <textarea name="" id="content" data-id="{{content._id.toString()}}"></textarea>
+           <button type="button" class="btn btn-primary" id="sumbit">提交</button>
+       </div>
+       {% else %}
+        <div class="alert alert-info" role="alert">
+            您还没有登录，请先登录！
+        </div>
+        {% endif %}
+        {% if content.comments.length <= 0 %}
+        <div class="alert alert-info" role="alert">
+            您还没有留言
+        </div>
+        {% endif %}
+       <div class="history-list">
+           <ul>
+               {% for item in content.comments%}
+                <li>
+                    <div class="info">
+                        <p>{{item.username}}</p>
+                        <p>{{item.postTime|date('Y年m月d日 H:i:s', -8*60)}}</p>
+                    </div>
+                    <div class="content">
+                        {{item.content}}
+                    </div>
+                </li>
+                {% endfor %}
+                <!-- <li>
+                    <div class="info">
+                        <p>user</p>
+                        <p>时间</p>
+                    </div>
+                    <div class="content">
+                        评论内容
+                    </div>
+                </li> -->
+           </ul>
+       </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script>
+    
+        $(function(){
+            $('#sumbit').click(function(){
+                var $content = $('#content')
+                if(!$content.val()){
+                    alert('请填写评价内容再提交！')
+                    return
+                }
+                $.ajax({
+                    url: '/api/comment/post',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        content: $content.val(),
+                        content_id: $content[0].dataset.id
+                    },
+                    success: function(res){
+                        
+                        if(!res.code){
+                            window,location.reload()
+                        }
+                    }
+                })
+            })
+        })
+        function renderComment(comment) {
+
+        }
+    </script>
+{% endblock %}

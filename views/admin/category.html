@@ -1,0 +1,144 @@
+{% extends 'layout.html' %}
+{% block main%}
+<div id="app-category">
+    <nav aria-label="breadcrumb" class="mt-20">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">管理首页</a></li>
+                <li class="breadcrumb-item active" aria-current="page">用户列表</li>
+            </ol>
+        </nav>
+        <div>
+            <button type="button" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" class="btn btn-success" @click="add" >添加分类</button>
+        </div>
+        <table class="table bg-white mt-20">
+            <thead>
+                <tr>
+                    <th scope="row">ID</th>
+                    <td>分类名称</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in category%}
+                    <tr>
+                        <th scope="row">{{item._id.toString()}}</th>
+                        <td>{{item.name}}</td>
+                        <td> 
+                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item._id.toString()}}" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" @click="edit">编辑</button> 
+                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item._id.toString()}}" @click="deleteItem">删除</button> 
+                        </td>
+                    </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+        
+        
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">添加分类</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert" v-html="msg" v-if="msg_show"></div>
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">分类名称:</label>
+                            <input type="text" class="form-control" v-model="name" id="recipient-name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="submit">提交</button>
+                </div>
+                </div>
+            </div>
+        </div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
+<script>
+    new Vue({
+        el: '#app-category',
+        data: {
+            name: '',
+            msg: '',
+            msg_show: false,
+            is_edit: false,
+            url: ''
+        },
+        methods: {
+            submit(){
+                var me = this
+                this.url = this.is_edit ? '/admin/category/edit' : '/admin/category/add'
+                $.ajax({
+                    url: this.url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        name: me.name,
+                        id: this.item_id
+                    },
+                    success: function(res){
+                        me.msg = res.msg
+                        me.msg_show = true
+                        setTimeout(function(){
+                            me.msg_show = false
+                            if(!res.code){
+                                window.location.reload()
+                                me.msg = ''
+                                $('#exampleModal').modal('toggle')
+                                return
+                            }
+                        }, 1000)
+                    }
+                })
+            },
+            add: function(){
+                this.is_edit = false
+                this.name = ''
+            },
+            deleteItem: function(e){
+                $.ajax({
+                    url: '/admin/category/delete',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: e.toElement.dataset.id
+                    },
+                    success: function(res){
+                        if(!res.code){
+                            window.location.reload()
+                        }
+                    }
+
+                })
+            },
+            edit(e){
+                this.is_edit = true
+                let me = this
+                this.item_id = e.toElement.dataset.id
+                $.ajax({
+                    url: '/admin/category/info',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: e.toElement.dataset.id
+                    },
+                    success: function(res){
+                        if(!res.code){
+                            me.name = res.data.name
+                        }
+                    }
+
+                })
+            }
+        }
+    })
+</script>
+
+{% endblock%}

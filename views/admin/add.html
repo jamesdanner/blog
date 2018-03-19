@@ -1,0 +1,137 @@
+{% extends 'layout.html' %}
+{% block main%}
+<div id="app-category">
+    <nav aria-label="breadcrumb" class="mt-20">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin">文章</a></li>
+            <li class="breadcrumb-item active" aria-current="page">文章添加</li>
+        </ol>
+    </nav>
+    <div class="bg-white" style="padding: 20px; box-sizing: border-box;">
+        <form >
+            <label for="exampleInputEmail1">类别</label>
+            <select class="form-control" id="exampleFormControlSelect">
+                {% for item in categories%}
+                <option value="{{item._id.toString()}}">{{item.name}}</option>
+                {% endfor %}
+            </select>
+            <div class="form-group">
+                <label for="exampleInputEmail1">标题</label>
+                <input type="text" class="form-control" v-model="title" value="{{content.title}}" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">简介</label>
+                <input type="text" class="form-control" v-model="description" id="exampleInputPassword" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">内容</label>
+                <textarea type="text" class="form-control" v-model="content" id="exampleInputPassword" placeholder="Password"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" @click="submit">提交</button>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
+<script>
+    new Vue({
+        el: '#app-category',
+        data: {
+            name: '',
+            msg: '',
+            title: '',
+            description: '',
+            content: '',
+            url: ''
+        },
+        methods: {
+            submit(){
+                var me = this
+                var obj = document.getElementById('exampleFormControlSelect'); //定位id
+                var index = obj.selectedIndex; // 选中索引
+                var value = obj.options[index].value; // 选中值
+                $.ajax({
+                    url: '/admin/content/add',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        category: value,
+                        title: me.title,
+                        description: me.description,
+                        content: me.content
+                    },
+                    success: function(res){
+                        me.msg = res.msg
+                        me.msg_show = true
+                        setTimeout(function(){
+                            me.msg_show = false
+                            if(!res.code){
+                                window.history.go(-1)
+                            }
+                        }, 1000)
+                    }
+                })
+            },
+            add: function(){
+                window.location.href = '/admin/content/add'
+            },
+            deleteItem: function(e){
+                $.ajax({
+                    url: '/admin/category/delete',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: e.toElement.dataset.id
+                    },
+                    success: function(res){
+                        if(!res.code){
+                            window.location.reload()
+                        }
+                    }
+
+                })
+            },
+            edit(e){
+                this.is_edit = true
+                let me = this
+                this.item_id = e.toElement.dataset.id
+                $.ajax({
+                    url: '/admin/category/info',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: e.toElement.dataset.id
+                    },
+                    success: function(res){
+                        if(!res.code){
+                            me.name = res.data.name
+                        }
+                    }
+
+                })
+            }
+        },
+        mounted: function(){
+            if(!window.location.search) return
+             var me = this
+            $.ajax({
+                    url: '/admin/content/edit',
+                    dataType: 'json',
+                    type: 'get',
+                    data: {
+                        id: window.location.search.substring(4)
+                    },
+                    success: function(res){
+                        me.title = res.data.title
+                        me.description = res.data.description
+                        me.content = res.data.content
+                        me.url = res.data.url
+                    }
+
+                })
+            
+        }
+    })
+</script>
+
+{% endblock%}

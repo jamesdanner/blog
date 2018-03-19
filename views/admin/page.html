@@ -1,0 +1,31 @@
+<nav aria-label="...">
+    <ul class="pagination">
+        {% if page == 1 %}
+            <li class="page-item disabled">
+                <a class="page-link" href="/admin/users?page={{page - 1}}" tabindex="1">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item">
+                <a class="page-link" href="/admin/users?page={{page - 1}}" tabindex="1">Previous</a>
+            </li>
+        {% endif %}
+        <li class="page-item">
+            <a class="page-link" href="#">
+                共有{{count}}条，每页显示{{limit}}条数据，一共{{pages}}页，当前{{page}}页
+            </a>
+        </li>
+        <!-- <li class="page-item active">
+            <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+        {% if page >= pages %}
+            <li class="page-item disabled">
+                <a class="page-link" href="/admin/users?page={{page + 1}}">Next</a>
+            </li>
+        {% else %}
+            <li class="page-item ">
+                <a class="page-link" href="/admin/users?page={{page + 1}}">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

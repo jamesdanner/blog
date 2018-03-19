@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap-grid.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/style/main.css">
+    
+</head>
+<body>
+    <div>
+        <div class="banner">
+                <img src="/public/images/home.jpg" alt="">
+            </div>
+            <div class="tab">
+                <div class="container">
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                        <a class="navbar-brand" href="/">新前端</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                {% for item in categories %}
+                                    {% if item.id == category%}
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="/?category={{item.id}}">{{item.name}} <span class="sr-only">(current)</span></a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/?category={{item.id}}">{{item.name}} <span class="sr-only">(current)</span></a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div class="container article-list">
+                <div class="row">
+                    <div class="col-12 col-md-8">
+                        {% block content %}{%endblock%}
+                    </div>
+                    <div class="col-6 col-md-4" id="app">
+                        {% if !userInfo._id %}
+                        <div class="bg-white form">
+                            <form>
+                                <div class="form-group">
+                                    <div class="alert alert-danger" role="alert" v-if="tips_show" v-html="message"></div>
+                                    <label for="exampleInputEmail1">用户名</label>
+                                    <input type="text" class="form-control" v-model="username" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">密码</label>
+                                    <input type="password" class="form-control" v-model="password" id="exampleInputPassword1" placeholder="Password">
+                                </div>
+                                <div class="form-group" v-if="form_show">
+                                    <label for="exampleInputPassword1">确认密码</label>
+                                    <input type="password" class="form-control" v-model="repassword" id="exampleInputPassword2" placeholder="Password">
+                                </div>
+                                <button type="button" class="btn btn-primary" @click="submit"  v-if="!form_show">登录</button>
+                                <button type="button" class="btn btn-info" v-else @click="submit">注册</button>
+                                <div v-if="form_show"><span>已有帐号</span><a @click='form_show = !form_show' href="javascript: void(0)">去登录</a></div>
+                                <div v-else><span>还没有帐号</span><a @click='form_show = !form_show' href="javascript: void(0)">去注册</a></div>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{userInfo.username}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                {% if userInfo.isAdmin %}
+                                <p class="card-text">您是管理员用户 <a href="/admin">去后台管理</a></p>
+                                {% endif %}
+                                <a href="javascript: void(0)" class="card-link" @click="goOut">退出</a>
+                                <!-- <a href="#" class="card-link">Another link</a> -->
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/public/javascript/index.js"></script>
+</body>
+</html>
