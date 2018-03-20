@@ -4,8 +4,8 @@
     <div class="list-box">
         <h1>{{content.title}}</h1>
         <p class="col-default">
-            <span>作者:{{content.user.username}}</span>
-            <span>时间:{{content.addTime|date('Y年m月d日 H:i:s', -8*60)}}</span>
+            <span>作者:{{content.username}}</span>
+            <span>时间:{{content.add_time|date('Y年m月d日 H:i:s', -8*60)}}</span>
             <span>阅读:{{content.views}}</span>
             <span>评论:{{content.comments.length}}</span>
         </p>
@@ -19,7 +19,7 @@
            <p>一共有{{content.comments.length}}条评论</p>
        </div>
        <div class="user-name">sdfsdf</div>
-       {% if userInfo._id %}
+       {% if userInfo.user_id %}
        <div class="input" id="comments">
            <textarea name="" id="content" data-id="{{content._id.toString()}}"></textarea>
            <button type="button" class="btn btn-primary" id="sumbit">提交</button>
@@ -47,15 +47,6 @@
                     </div>
                 </li>
                 {% endfor %}
-                <!-- <li>
-                    <div class="info">
-                        <p>user</p>
-                        <p>时间</p>
-                    </div>
-                    <div class="content">
-                        评论内容
-                    </div>
-                </li> -->
            </ul>
        </div>
     </div>

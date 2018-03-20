@@ -2,6 +2,7 @@ const express = require('express')
 const router  = express.Router()
 const User = require('../models/User')
 const Content = require('../models/Content')
+const Query = require('../db/index')
 
 let res_data = null;
 router.use(function(req, res, next){
@@ -12,7 +13,6 @@ router.use(function(req, res, next){
     next()
 })
 router.post('/user/register', function(req, res, next){
-    console.log(req.body);
     const {username, password, repassword} = req.body
     if(!username){
         res_data.code = 1
@@ -32,43 +32,45 @@ router.post('/user/register', function(req, res, next){
         res.json(res_data)
         return
     }
-    User.findOne({username: username}).then(function(userInfo){
-        if(userInfo){
+    var sql = 'SELECT * FROM users WHERE username=?'
+	var param = [username]
+    Query(sql, param, function(err, rs, fields){
+        if(rs.length > 0) {
             res_data.code = 4
             res_data.msg = '用户名被注册'
             res.json(res_data)
             return
+        } else {
+            res_data.msg = '注册成功！'
+            res.json(res_data)
+            var sql = 'insert into users(username,password) values(?,?)';
+            var param = [username, password];
+            Query(sql,param,function(err,rs){})
         }
-        let user = new User({
-            username: username,
-            password: password
-        });
-        return user.save()
-    }).then(function(newUserInfo){
-        res_data.msg = '注册成功！'
-        res.json(res_data)
     })
+    
 })
 
 router.post('/user/login', function(req, res, next){
     const {username, password} = req.body
-    User.findOne({username: username, password: password}).then(function(userInfo){
-        if(!userInfo) {
+    const sql = 'SELECT * FROM users WHERE username=? AND password=?'
+    const param = [username, password]
+    Query(sql, param, function(err, rs, fields){
+        if(rs.length === 0 ){
             res_data.code = 2
             res_data.msg = '用户名或者密码错误'
         } else {
             res_data.code = 0
             res_data.msg = '登录成功！'
+            console.log(rs);
+            
+            req.cookies.set('userInfo', JSON.stringify({
+                user_id: rs[0].user_id,
+                username: rs[0].username,
+                is_admin: rs[0].is_admin
+            }))
         }
-        req.cookies.set('userInfo', JSON.stringify({
-            _id: userInfo._id,
-            username: userInfo.username,
-            isAdmin: userInfo.isAdmin
-        }))
-        
-        
         res.json(res_data)
-        return
     })
 })
 router.get('/user/logout', function(req, res, next){

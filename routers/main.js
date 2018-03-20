@@ -2,7 +2,7 @@ const express = require('express')
 const router  = express.Router()
 const Category = require('../models/Category')
 const Content = require('../models/Content')
-
+const Query = require('../db/index')
 
 
 
@@ -13,54 +13,49 @@ router.use(function(req, res, next){
         userInfo: req.userInfo,
         categories: []
     }
-    Category.find().then(function(doc){
-        data.categories = doc
+    Query('SELECT * FROM categories', function(err, rs, fields){
+        data.categories = rs
         next()
+        
     })
 })
 
 
 router.get('/', function(req, res, next){
-    
-    data.page = Number(req.query.page || 1)
-    data.limit = 10
-    data.pages = 0
-    data.count = 0
-    data.category = req.query.category || ''
-
-    let where = {}
-    if(data.category){
-        where.category = data.category
-    }
-    Content.where(where).count().then(function(count){
-        data.count = count
-        data.page = Math.min(data.page, data.pages)
-        data.page = Math.max(data.page, 1)
-        let skip = (data.page - 1) * data.limit
-
-        
-        return Content.where(where).find().limit(data.limit).skip(skip).populate(['category', 'user']).sort({addTime: -1})
-    }).then(function(contents){
-        data.contents = contents
+    console.log(req.query)
+    const {cat_id} = req.query
+    const sql = `SELECT a.*, c.username, b.cat_name 
+                FROM content a
+                LEFT JOIN categories b ON a.cat_id = b.cat_id
+                LEFT JOIN users c ON a.user_id = c.user_id
+                ORDER BY a.add_time DESC`
+    const params = [cat_id]
+    Query(sql, params, function(err, doc){
+        data.contents = doc
         res.render('main/index', data)
     })
-    
-    
     
 })
 
 router.get('/view', function(req, res){
     const {content_id} = req.query
+    const sql = `SELECT * FROM content WHERE content_id=?`
+    const params = [content_id]
     
-    Content.findOne({
-        _id: content_id
-    }).populate('user').then(function(doc){
-        data.content = doc
-        doc.views++
-        doc.save()
-        data.content.comments = data.content.comments.reverse()
+    Query(sql, params, function(err, doc){
+        data.content = doc[0]
         res.render('main/view', data)
+        //data.contents = doc
+        //res.render('main/index', data)
     })
-
+    // Content.findOne({
+    //     _id: content_id
+    // }).populate('user').then(function(doc){
+        
+    //     doc.views++
+    //     doc.save()
+    //     data.content.comments = data.content.comments.reverse()
+        
+    // })
 })
 module.exports = router

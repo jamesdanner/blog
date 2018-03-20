@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const Cookies = require('cookies')
 const app = express()
 const User = require('./models/User')
+const Query = require('./db/index')
 //设置静态文件托管
 //用户访问url以/public开始，那么直接返回 __dirname + '/public' 下的文件
 app.use('/public', express.static( __dirname + '/public'))
@@ -25,9 +26,10 @@ app.use(function(req, res, next){
         try {
             req.userInfo = JSON.parse(req.cookies.get('userInfo'))
             //获取管理员类型
-            User.findById(req.userInfo._id).then(function(userInfo){
-                req.userInfo.isAdmin = Boolean(userInfo.isAdmin)
+            Query('SELECT * FROM users WHERE user_id=?', [req.userInfo.user_id], function(err, doc){
+                req.userInfo.is_admin = Boolean(doc[0].is_admin)
             })
+            
         }catch(e){
             console.log(e)
         }

@@ -12,7 +12,7 @@
             <label for="exampleInputEmail1">类别</label>
             <select class="form-control" id="exampleFormControlSelect">
                 {% for item in categories%}
-                <option value="{{item._id.toString()}}">{{item.name}}</option>
+                <option value="{{item.cat_id}}">{{item.cat_name}}</option>
                 {% endfor %}
             </select>
             <div class="form-group">
@@ -55,7 +55,7 @@
                     type: 'post',
                     dataType: 'json',
                     data: {
-                        category: value,
+                        cat_id: value,
                         title: me.title,
                         description: me.description,
                         content: me.content

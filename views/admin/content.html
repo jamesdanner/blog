@@ -4,7 +4,7 @@
     <nav aria-label="breadcrumb" class="mt-20">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/admin">管理首页</a></li>
-                <li class="breadcrumb-item active" aria-current="page">用户列表</li>
+                <li class="breadcrumb-item active" aria-current="page">文章列表</li>
             </ol>
         </nav>
         <div>
@@ -26,16 +26,16 @@
             <tbody>
                 {% for item in contents%}
                     <tr>
-                        <th scope="row">{{item._id.toString()}}</th>
-                        <td>{{item.category.name}}</td>
+                        <th scope="row">{{item.content_id}}</th>
+                        <td>{{item.cat_name}}</td>
                         <td>{{item.title}}</td>
                         <td>{{item.description}}</td>
-                        <td>{{item.user.username}}</td>
+                        <td>{{item.username}}</td>
                         <td>{{item.views}}</td>
-                        <td>{{item.addTime|date('Y年m月d日 H:i:s', -8*60)}}</td>
+                        <td>{{item.add_time|date('Y年m月d日 H:i:s', -8*60)}}</td>
                         <td> 
-                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item._id.toString()}}" @click="edit">编辑</button> 
-                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item._id.toString()}}" @click="deleteItem">删除</button> 
+                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item.content_id}}" @click="edit">编辑</button> 
+                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item.content_id}}" @click="deleteItem">删除</button> 
                         </td>
                     </tr>
                 {% endfor%}
