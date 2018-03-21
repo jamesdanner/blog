@@ -1,10 +1,8 @@
 const express = require('express')
 const swig = require('swig')
-const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const Cookies = require('cookies')
 const app = express()
-const User = require('./models/User')
 const Query = require('./db/index')
 //设置静态文件托管
 //用户访问url以/public开始，那么直接返回 __dirname + '/public' 下的文件
@@ -31,7 +29,6 @@ app.use(function(req, res, next){
             })
             
         }catch(e){
-            console.log(e)
         }
     }
     next()
@@ -43,16 +40,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use('/admin', require('./routers/admin'))
 app.use('/api', require('./routers/api'))
 app.use('/', require('./routers/main'))
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/blog', function(err){
-    if(err){
-        console.log('数据库链接错误');
-        console.log(err);
-        
-    } else {
-        app.listen(8080, '127.0.0.1', function(){
-            console.log('ok==')
-        })
-    }
+app.listen(5001, '127.0.0.1', function(){
+    console.log('ok==')
 })
 

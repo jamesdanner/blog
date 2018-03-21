@@ -1,7 +1,5 @@
 const express = require('express')
 const router  = express.Router()
-const User = require('../models/User')
-const Content = require('../models/Content')
 const Query = require('../db/index')
 
 let res_data = null;
@@ -20,9 +18,16 @@ router.post('/user/register', function(req, res, next){
         res.json(res_data)
         return
     }
+    
     if(!password){
         res_data.code = 1
         res_data.msg = '密码不能为空'
+        res.json(res_data)
+        return
+    }
+    if(password.length >= 6){
+        res_data.code = 1
+        res_data.msg = '密码必须大于6位数！'
         res.json(res_data)
         return
     }
@@ -62,7 +67,6 @@ router.post('/user/login', function(req, res, next){
         } else {
             res_data.code = 0
             res_data.msg = '登录成功！'
-            console.log(rs);
             
             req.cookies.set('userInfo', JSON.stringify({
                 user_id: rs[0].user_id,
@@ -81,7 +85,7 @@ router.get('/user/logout', function(req, res, next){
 //评论提交
 
 router.post('/comment/post', function(req, res, next){
-    const id = req.body.content_id || 0;
+    const id = req.body.content_id || 0
     let postData = {
         username: req.userInfo.username,
         postTime: new Date(),

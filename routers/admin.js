@@ -1,8 +1,5 @@
 const express = require('express')
 const router  = express.Router()
-const User = require('../models/User')
-const Category = require('../models/Category')
-const Content = require('../models/Content')
 const Query = require('../db/index')
 
 

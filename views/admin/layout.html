@@ -40,7 +40,7 @@
                                 admin
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">退出</a>
+                                <a id="sign-out" class="dropdown-item" href="#">退出</a>
                             </div>
                         </li>
                     </ul>
@@ -51,14 +51,25 @@
     <div class="container-fluid">
         {% block main%}{%endblock%}
     </div>
-    
-
 
     <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
-
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.js"></script>
+    <script>
+        $(function(){
+            $('#sign-out').click(function(){
+                $.ajax({
+                    url: '/api/user/logout',
+                    success: function(res){
+                        if(!res.code){
+                            window.location.href='/'
+                        }
+                    }
+                })
+            })
+        })
+        
+    </script>
 </body>
-
 </html>

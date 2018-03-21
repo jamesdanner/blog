@@ -1,7 +1,5 @@
 const express = require('express')
 const router  = express.Router()
-const Category = require('../models/Category')
-const Content = require('../models/Content')
 const Query = require('../db/index')
 
 
@@ -16,18 +14,17 @@ router.use(function(req, res, next){
     Query('SELECT * FROM categories', function(err, rs, fields){
         data.categories = rs
         next()
-        
     })
 })
 
 
 router.get('/', function(req, res, next){
-    console.log(req.query)
     const {cat_id} = req.query
     const sql = `SELECT a.*, c.username, b.cat_name 
                 FROM content a
                 LEFT JOIN categories b ON a.cat_id = b.cat_id
                 LEFT JOIN users c ON a.user_id = c.user_id
+                ${cat_id ? 'WHERE a.cat_id=?' : ''}
                 ORDER BY a.add_time DESC`
     const params = [cat_id]
     Query(sql, params, function(err, doc){
@@ -45,17 +42,6 @@ router.get('/view', function(req, res){
     Query(sql, params, function(err, doc){
         data.content = doc[0]
         res.render('main/view', data)
-        //data.contents = doc
-        //res.render('main/index', data)
     })
-    // Content.findOne({
-    //     _id: content_id
-    // }).populate('user').then(function(doc){
-        
-    //     doc.views++
-    //     doc.save()
-    //     data.content.comments = data.content.comments.reverse()
-        
-    // })
 })
 module.exports = router
