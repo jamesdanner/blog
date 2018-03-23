@@ -3,7 +3,7 @@
 {% block content%}
     {% for item in contents %}
         <div class="card" style="width: 100%; margin-bottom: 20px;">
-            <img class="card-img-top" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1484094858,4050549698&fm=200&gp=0.jpg" alt="Card image cap">
+            <img class="card-img-top" src="{{item.cover_url}}" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">{{item.title}}</h5>
                 <p class="card-text">{{item.description}}</p>

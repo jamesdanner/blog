@@ -16,6 +16,7 @@
                     <th scope="row">ID</th>
                     <td>所属分类</td>
                     <td>标题</td>
+                    <td>封面图</td>
                     <td>简介</td>
                     <td>作者</td>
                     <td>阅读量</td>
@@ -29,6 +30,7 @@
                         <th scope="row">{{item.content_id}}</th>
                         <td>{{item.cat_name}}</td>
                         <td>{{item.title}}</td>
+                        <td><img style="width:100px; height: 100px;" src="{{item.cover_url}}" alt=""></td>
                         <td>{{item.description}}</td>
                         <td>{{item.username}}</td>
                         <td>{{item.views}}</td>

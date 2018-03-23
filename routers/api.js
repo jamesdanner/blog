@@ -67,7 +67,6 @@ router.post('/user/login', function(req, res, next){
         } else {
             res_data.code = 0
             res_data.msg = '登录成功！'
-            
             req.cookies.set('userInfo', JSON.stringify({
                 user_id: rs[0].user_id,
                 username: rs[0].username,
@@ -88,17 +87,13 @@ router.post('/comment/post', function(req, res, next){
     const id = req.body.content_id || 0
     let postData = {
         username: req.userInfo.username,
-        postTime: new Date(),
         content: req.body.content
     }
-    Content.findOne({
-        _id: id
-    }).then(function(content){
-        content.comments.push(postData)
-        return content.save()
-    }).then(function(newContent){
+    const sql = `insert into comments(user_id, com_content, content_id) value(?, ?, ?)`
+    const params = [req.userInfo.user_id, req.body.content, req.body.content_id]
+    Query(sql, params, function(err, doc){
         res_data.msg = '评论成功！'
-        res_data.data = newContent
+        res_data.data = doc
         res.json(res_data)
     })
 })

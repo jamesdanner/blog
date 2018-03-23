@@ -17,6 +17,7 @@ app.set('view engine', 'html')
 //开发过程中要取消模板的缓存
 swig.setDefaults({cache: false})
 
+app.use(bodyParser({limit: '5mb'}))
 //设置cookie
 app.use(function(req, res, next){
     req.cookies = new Cookies(req, res)

@@ -10,7 +10,9 @@
   "author": "james",
   "license": "ISC",
   "dependencies": {
+    "ali-oss": "^4.13.2",
     "body-parser": "^1.18.2",
+    "co": "^4.6.0",
     "cookies": "^0.7.1",
     "express": "^4.16.3",
     "markdown": "^0.5.0",

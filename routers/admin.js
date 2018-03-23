@@ -1,6 +1,16 @@
 const express = require('express')
 const router  = express.Router()
 const Query = require('../db/index')
+const util = require('../utils/index')
+const fs = require('fs');
+var co = require('co');
+var OSS = require('ali-oss');
+var client = new OSS({
+    region: 'oss-cn-shenzhen', 
+    accessKeyId: 'LTAIsjZnG8BgZeve', 
+    accessKeySecret: '4P5LFyj22YDiC8og5D0AJRyXJAEPw7',
+    bucket: 'e-lygpics'
+});
 
 
 let res_data = null;
@@ -30,7 +40,7 @@ router.get('/users', function(req, res, next){
     const skip = (page - 1) * limit
     let pages = 0
 
-    const sql = 'SELECT * FROM users'
+    const sql = 'SELECT user_id, username, is_admin FROM users'
     const params = []
 
     Query(sql, params, function(err, rs, fields){
@@ -173,16 +183,55 @@ router.get('/content/delete', function(req, res){
         }
     })
 })
+
+//文章添加
 router.post('/content/add', function(req, res, next){
-    let {cat_id, title, description, content} = req.body
-    var sql = 'insert into content(cat_id, title, description, content, user_id) values(?, ?, ?, ?, ?)'
-    var param = [cat_id, title, description, content, req.userInfo.user_id]
-    Query(sql, param, function(err, rs){
-        if(!err){
-            res.json({
-                msg: '添加成功！'
-            })
+    let {cat_id, title, description, content, cover_url} = req.body
+
+    var fileName = util.imgKey() + '.jpg';
+    // 构建图片路径
+    var filePath = __dirname + '/tmp/' + fileName;
+    //过滤data:URL
+    if(!cover_url){
+        res.end({code: 0, msg: "图片上传不能为空！"})
+    }
+    
+    var base64Data = cover_url.replace(/^data:image\/\w+;base64,/, "");
+    var dataBuffer = new Buffer(base64Data, 'base64');
+    fs.writeFile(filePath, dataBuffer, function(err) {
+        if(err){
+          res.end(JSON.stringify({status:"102",msg:"文件写入失败"})); 
+        }else{
+            var localFile = filePath;
+            var key = fileName;
+            //阿里云 上传文件 
+            co(function* () {
+                client.useBucket('e-lygpics');
+                var result = yield client.put(key, filePath);
+                var imageSrc = 'http://e-lygpics.oss-cn-shenzhen.aliyuncs.com/' + result.name;
+                var sql = 'insert into content(cat_id, title, description, content, user_id, cover_url) values(?, ?, ?, ?, ?, ?)'
+                var param = [cat_id, title, description, content, req.userInfo.user_id, imageSrc]
+                Query(sql, param, function(err, rs){
+                    if(!err){
+                        res.json({
+                            msg: '添加成功！'
+                        })
+                        fs.unlinkSync(filePath);
+                    }
+                })
+            }).catch(function (err) {
+                console.log(err);
+                res.end(JSON.stringify({code: 0,msg:'上传失败',error:err},"utf-8")); 
+                //上传之后删除本地文件
+                fs.unlinkSync(filePath);
+            });
+           
+           
         }
-    })
+    });
+
+
+
+    
 })
 module.exports = router

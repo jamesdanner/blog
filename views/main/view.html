@@ -7,7 +7,7 @@
             <span>作者:{{content.username}}</span>
             <span>时间:{{content.add_time|date('Y年m月d日 H:i:s', -8*60)}}</span>
             <span>阅读:{{content.views}}</span>
-            <span>评论:{{content.comments.length}}</span>
+            <span>评论:{{comments_list.length}}</span>
         </p>
         <div>
             {{content.content}}
@@ -16,12 +16,12 @@
     <div class="message-list">
        <div class="title">
            <h1>评论</h1>
-           <p>一共有{{content.comments.length}}条评论</p>
+           <p>一共有{{comments_list.length}}条评论</p>
        </div>
-       <div class="user-name">sdfsdf</div>
+       <div class="user-name">{{content.username}}</div>
        {% if userInfo.user_id %}
        <div class="input" id="comments">
-           <textarea name="" id="content" data-id="{{content._id.toString()}}"></textarea>
+           <textarea name="" id="content" data-id="{{content.content_id}}"></textarea>
            <button type="button" class="btn btn-primary" id="sumbit">提交</button>
        </div>
        {% else %}
@@ -29,21 +29,21 @@
             您还没有登录，请先登录！
         </div>
         {% endif %}
-        {% if content.comments.length <= 0 %}
-        <div class="alert alert-info" role="alert">
-            您还没有留言
+        {% if comments_list.length <= 0 %}
+        <div class="alert alert-info" role="alert" style="margin-top: 20px;">
+            还没有留言
         </div>
         {% endif %}
        <div class="history-list">
            <ul>
-               {% for item in content.comments%}
+               {% for item in comments_list%}
                 <li>
                     <div class="info">
                         <p>{{item.username}}</p>
-                        <p>{{item.postTime|date('Y年m月d日 H:i:s', -8*60)}}</p>
+                        <p>{{item.post_time|date('Y年m月d日 H:i:s', -8*60)}}</p>
                     </div>
                     <div class="content">
-                        {{item.content}}
+                        {{item.com_content}}
                     </div>
                 </li>
                 {% endfor %}
@@ -71,6 +71,7 @@
                     success: function(res){
                         
                         if(!res.code){
+                            alert(res.msg)
                             window,location.reload()
                         }
                     }

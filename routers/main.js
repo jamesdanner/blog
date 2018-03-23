@@ -20,7 +20,7 @@ router.use(function(req, res, next){
 
 router.get('/', function(req, res, next){
     const {cat_id} = req.query
-    const sql = `SELECT a.*, c.username, b.cat_name 
+    const sql = `SELECT a.*, c.username, b.cat_name
                 FROM content a
                 LEFT JOIN categories b ON a.cat_id = b.cat_id
                 LEFT JOIN users c ON a.user_id = c.user_id
@@ -28,6 +28,8 @@ router.get('/', function(req, res, next){
                 ORDER BY a.add_time DESC`
     const params = [cat_id]
     Query(sql, params, function(err, doc){
+        console.log(doc)
+        
         data.contents = doc
         res.render('main/index', data)
     })
@@ -41,7 +43,18 @@ router.get('/view', function(req, res){
     
     Query(sql, params, function(err, doc){
         data.content = doc[0]
-        res.render('main/view', data)
+        const sql_com = `SELECT c.*, u.username
+                        FROM comments c
+                        LEFT JOIN users u ON c.user_id = u.user_id
+                        WHERE content_id=?`
+                        
+        Query(`UPDATE content SET views = ${data.content.views+=1} WHERE content_id = ? `, params, function(err, doc){})
+        Query(sql_com, params, function(err, com_doc){
+            data.comments_list = com_doc
+            res.render('main/view', data)
+        })
+        
     })
+    
 })
 module.exports = router
