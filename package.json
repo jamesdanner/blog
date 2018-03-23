@@ -10,13 +10,16 @@
   "author": "james",
   "license": "ISC",
   "dependencies": {
+    "ali-oss": "^4.13.2",
     "body-parser": "^1.18.2",
+    "co": "^4.6.0",
     "cookies": "^0.7.1",
     "express": "^4.16.3",
     "markdown": "^0.5.0",
     "mongoose": "^4.7.1",
     "mysql": "^2.15.0",
     "nodemon": "^1.17.2",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "utility": "^1.13.1"
   }
 }

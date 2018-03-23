@@ -96,5 +96,12 @@ ul, li {
 .history-list ul li .info{
     display: flex;
     justify-content: space-between;
+}
 
+.footer {
+    margin-top: 20px;
+    background: #007bff;
+    padding: 10px 0px;
+    height: 100px;
+    color: white;
 }

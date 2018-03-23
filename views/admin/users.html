@@ -11,18 +11,16 @@
         <tr>
             <th scope="row">ID</th>
             <td>用户名</td>
-            <td>密码</td>
             <td>管理员</td>
         </tr>
     </thead>
     <tbody>
         {% for user in users%}
             <tr>
-                <th scope="row">{{user._id.toString()}}</th>
+                <th scope="row">{{user.user_id}}</th>
                 <td>{{user.username}}</td>
-                <td>{{user.password}}</td>
                 <td>
-                    {% if user.isAdmin %}是{% endif %}
+                    {% if user.is_admin %}是{% endif %}
                 </td>
             </tr>
         {% endfor%}

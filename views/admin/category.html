@@ -4,7 +4,7 @@
     <nav aria-label="breadcrumb" class="mt-20">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/admin">管理首页</a></li>
-                <li class="breadcrumb-item active" aria-current="page">用户列表</li>
+                <li class="breadcrumb-item active" aria-current="page">分类列表</li>
             </ol>
         </nav>
         <div>
@@ -21,11 +21,11 @@
             <tbody>
                 {% for item in category%}
                     <tr>
-                        <th scope="row">{{item._id.toString()}}</th>
-                        <td>{{item.name}}</td>
+                        <th scope="row">{{item.cat_id}}</th>
+                        <td>{{item.cat_name}}</td>
                         <td> 
-                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item._id.toString()}}" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" @click="edit">编辑</button> 
-                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item._id.toString()}}" @click="deleteItem">删除</button> 
+                            <button type="button" class="btn btn-primary btn-sm" data-id="{{item.cat_id}}" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" @click="edit">编辑</button> 
+                            <button type="button" class="btn btn-danger btn-sm"  data-id="{{item.cat_id}}" @click="deleteItem">删除</button> 
                         </td>
                     </tr>
                 {% endfor%}
@@ -47,7 +47,7 @@
                     <form>
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">分类名称:</label>
-                            <input type="text" class="form-control" v-model="name" id="recipient-name">
+                            <input type="text" class="form-control" v-model="cat_name" id="recipient-name">
                         </div>
                     </form>
                 </div>
@@ -65,7 +65,7 @@
     new Vue({
         el: '#app-category',
         data: {
-            name: '',
+            cat_name: '',
             msg: '',
             msg_show: false,
             is_edit: false,
@@ -80,8 +80,8 @@
                     type: 'post',
                     dataType: 'json',
                     data: {
-                        name: me.name,
-                        id: this.item_id
+                        cat_name: me.cat_name,
+                        cat_id: this.item_id
                     },
                     success: function(res){
                         me.msg = res.msg
@@ -131,7 +131,7 @@
                     },
                     success: function(res){
                         if(!res.code){
-                            me.name = res.data.name
+                            me.cat_name = res.data.cat_name
                         }
                     }
 

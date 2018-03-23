@@ -23,6 +23,7 @@ var app = new Vue({
         submit: function(){
             var me = this
             this.url = this.form_show ? '/api/user/register' : '/api/user/login'
+            
             $.ajax({
                 type: 'post',
                 url: me.url,

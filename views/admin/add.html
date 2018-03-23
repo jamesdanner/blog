@@ -12,12 +12,20 @@
             <label for="exampleInputEmail1">类别</label>
             <select class="form-control" id="exampleFormControlSelect">
                 {% for item in categories%}
-                <option value="{{item._id.toString()}}">{{item.name}}</option>
+                <option value="{{item.cat_id}}">{{item.cat_name}}</option>
                 {% endfor %}
             </select>
             <div class="form-group">
                 <label for="exampleInputEmail1">标题</label>
                 <input type="text" class="form-control" v-model="title" value="{{content.title}}" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group" style="height: 300px;">
+                <label for="exampleInputEmail1">选择图片</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" @change="change" accept=".gif,.jpg,.jpeg,.png">
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                    <img :src="cover_url" alt="" style="display:block; width: 300px; height: 200px;">
+                </div>
             </div>
             <div class="form-group">
                 <label for="exampleInputPassword1">简介</label>
@@ -42,23 +50,52 @@
             title: '',
             description: '',
             content: '',
-            url: ''
+            url: '',
+            cover_url: ''
         },
         methods: {
+            change(e){
+                var me = this
+                var uploadFile = e.target.files[0];
+                var reader = new FileReader();
+                reader.readAsDataURL(uploadFile);
+                reader.onloadend = function() {
+                    me.cover_url = reader.result
+                    var base64 = reader.result; // base64就是图片的转换的结果 
+                };
+                
+            },
             submit(){
                 var me = this
                 var obj = document.getElementById('exampleFormControlSelect'); //定位id
                 var index = obj.selectedIndex; // 选中索引
                 var value = obj.options[index].value; // 选中值
+                if(!this.cover_url){
+                    alert('封面图片不能为空');
+                    return
+                }
+                if(!this.title){
+                    alert('标题不能为空');
+                    return
+                }
+                if(!this.description){
+                    alert('描述不能为空');
+                    return
+                }
+                if(!this.content){
+                    alert('内容不能为空');
+                    return
+                }
                 $.ajax({
                     url: '/admin/content/add',
                     type: 'post',
                     dataType: 'json',
                     data: {
-                        category: value,
+                        cat_id: value,
                         title: me.title,
                         description: me.description,
-                        content: me.content
+                        content: me.content,
+                        cover_url: this.cover_url
                     },
                     success: function(res){
                         me.msg = res.msg

@@ -8,14 +8,13 @@ var pool = mysql.createPool({
     database : 'blog'
 });
 
-var query=function(sql,param,callback){
-    pool.getConnection(function(err,conn){
+var query = function(sql, param, callback){
+    pool.getConnection(function(err, conn){
         if(err){
-            console.log(err);
             callback(err,null,null);
             return
         }
-        conn.query(sql,param,function(qerr,vals,fields){
+        conn.query(sql, param, function(qerr, vals, fields){
             //事件驱动回调
             callback(qerr,vals,fields);
         });

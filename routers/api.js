@@ -1,8 +1,7 @@
 const express = require('express')
 const router  = express.Router()
-const User = require('../models/User')
-const Content = require('../models/Content')
-
+const Query = require('../db/index')
+const utility = require('utility')
 let res_data = null;
 router.use(function(req, res, next){
     res_data = {
@@ -12,7 +11,6 @@ router.use(function(req, res, next){
     next()
 })
 router.post('/user/register', function(req, res, next){
-    console.log(req.body);
     const {username, password, repassword} = req.body
     if(!username){
         res_data.code = 1
@@ -20,9 +18,16 @@ router.post('/user/register', function(req, res, next){
         res.json(res_data)
         return
     }
+    
     if(!password){
         res_data.code = 1
         res_data.msg = '密码不能为空'
+        res.json(res_data)
+        return
+    }
+    if(password.length < 6){
+        res_data.code = 1
+        res_data.msg = '密码必须大于6位数！'
         res.json(res_data)
         return
     }
@@ -32,43 +37,45 @@ router.post('/user/register', function(req, res, next){
         res.json(res_data)
         return
     }
-    User.findOne({username: username}).then(function(userInfo){
-        if(userInfo){
+    var sql = 'SELECT * FROM users WHERE username=?'
+	var param = [username]
+    Query(sql, param, function(err, rs, fields){
+        if(rs.length > 0) {
             res_data.code = 4
             res_data.msg = '用户名被注册'
             res.json(res_data)
             return
+        } else {
+            res_data.msg = '注册成功！'
+            res.json(res_data)
+            var sql = 'insert into users(username,password) values(?,?)';
+            var param = [username, md5Pwd(password)];
+            Query(sql,param,function(err,rs){})
         }
-        let user = new User({
-            username: username,
-            password: password
-        });
-        return user.save()
-    }).then(function(newUserInfo){
-        res_data.msg = '注册成功！'
-        res.json(res_data)
     })
+    
 })
 
 router.post('/user/login', function(req, res, next){
     const {username, password} = req.body
-    User.findOne({username: username, password: password}).then(function(userInfo){
-        if(!userInfo) {
+    const sql = 'SELECT * FROM users WHERE username=? AND password=?'
+    console.log(username, md5Pwd(password));
+    
+    const param = [username, md5Pwd(password)]
+    Query(sql, param, function(err, rs, fields){
+        if(rs.length === 0 ){
             res_data.code = 2
             res_data.msg = '用户名或者密码错误'
         } else {
             res_data.code = 0
             res_data.msg = '登录成功！'
+            req.cookies.set('userInfo', JSON.stringify({
+                user_id: rs[0].user_id,
+                username: rs[0].username,
+                is_admin: rs[0].is_admin
+            }))
         }
-        req.cookies.set('userInfo', JSON.stringify({
-            _id: userInfo._id,
-            username: userInfo.username,
-            isAdmin: userInfo.isAdmin
-        }))
-        
-        
         res.json(res_data)
-        return
     })
 })
 router.get('/user/logout', function(req, res, next){
@@ -79,23 +86,24 @@ router.get('/user/logout', function(req, res, next){
 //评论提交
 
 router.post('/comment/post', function(req, res, next){
-    const id = req.body.content_id || 0;
+    const id = req.body.content_id || 0
     let postData = {
         username: req.userInfo.username,
-        postTime: new Date(),
         content: req.body.content
     }
-    Content.findOne({
-        _id: id
-    }).then(function(content){
-        content.comments.push(postData)
-        return content.save()
-    }).then(function(newContent){
+    const sql = `insert into comments(user_id, com_content, content_id) value(?, ?, ?)`
+    const params = [req.userInfo.user_id, req.body.content, req.body.content_id]
+    Query(sql, params, function(err, doc){
         res_data.msg = '评论成功！'
-        res_data.data = newContent
+        res_data.data = doc
         res.json(res_data)
     })
 })
+
+function md5Pwd(pwd){ //密文提交
+    const salt = 'james_good234897weru398ur'
+    return utility.md5(utility.md5(pwd + salt))
+}
 
 
 module.exports = router
