@@ -2638,7 +2638,7 @@ utility@0.1.11:
   dependencies:
     address ">=0.0.1"
 
-utility@^1.12.0, utility@^1.8.0:
+utility@^1.12.0, utility@^1.13.1, utility@^1.8.0:
   version "1.13.1"
   resolved "http://registry.npm.taobao.org/utility/download/utility-1.13.1.tgz#9d72e145e49e4c5a21f2c307b0baf575235023f4"
   dependencies:

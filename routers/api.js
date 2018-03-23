@@ -1,7 +1,7 @@
 const express = require('express')
 const router  = express.Router()
 const Query = require('../db/index')
-
+const utility = require('utility')
 let res_data = null;
 router.use(function(req, res, next){
     res_data = {
@@ -25,7 +25,7 @@ router.post('/user/register', function(req, res, next){
         res.json(res_data)
         return
     }
-    if(password.length >= 6){
+    if(password.length < 6){
         res_data.code = 1
         res_data.msg = '密码必须大于6位数！'
         res.json(res_data)
@@ -49,7 +49,7 @@ router.post('/user/register', function(req, res, next){
             res_data.msg = '注册成功！'
             res.json(res_data)
             var sql = 'insert into users(username,password) values(?,?)';
-            var param = [username, password];
+            var param = [username, md5Pwd(password)];
             Query(sql,param,function(err,rs){})
         }
     })
@@ -59,7 +59,9 @@ router.post('/user/register', function(req, res, next){
 router.post('/user/login', function(req, res, next){
     const {username, password} = req.body
     const sql = 'SELECT * FROM users WHERE username=? AND password=?'
-    const param = [username, password]
+    console.log(username, md5Pwd(password));
+    
+    const param = [username, md5Pwd(password)]
     Query(sql, param, function(err, rs, fields){
         if(rs.length === 0 ){
             res_data.code = 2
@@ -97,6 +99,11 @@ router.post('/comment/post', function(req, res, next){
         res.json(res_data)
     })
 })
+
+function md5Pwd(pwd){ //密文提交
+    const salt = 'james_good234897weru398ur'
+    return utility.md5(utility.md5(pwd + salt))
+}
 
 
 module.exports = router
