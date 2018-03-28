@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% block main%}
+
 <div id="app-category">
     <nav aria-label="breadcrumb" class="mt-20">
         <ol class="breadcrumb">
@@ -31,16 +32,33 @@
                 <label for="exampleInputPassword1">简介</label>
                 <input type="text" class="form-control" v-model="description" id="exampleInputPassword" placeholder="Password">
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="exampleInputPassword1">内容</label>
                 <textarea type="text" class="form-control" v-model="content" id="exampleInputPassword" placeholder="Password"></textarea>
+            </div> -->
+            <div id="editormd">
+                <textarea style="display:none;" >### Hello Editor.md !</textarea>
             </div>
             <button type="button" class="btn btn-primary" @click="submit">提交</button>
         </form>
     </div>
 </div>
 <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+<script src="../../public/plug/editormd/editormd.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.2.2/vue.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd("editormd", {
+            height:'300px',
+            syncScrolling : "single",
+            //启动本地图片上传功能
+            imageUpload: true,
+            imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "{{url_for('main.upload')}}",
+            path : "../../public/plug/editormd/lib/" // Autoload modules mode, codemirror, marked... dependents libs path
+        });
+    });
+</script>
 <script>
     new Vue({
         el: '#app-category',
@@ -51,7 +69,8 @@
             description: '',
             content: '',
             url: '',
-            cover_url: ''
+            cover_url: '',
+            content_mkd: ''
         },
         methods: {
             change(e){
@@ -66,6 +85,7 @@
                 
             },
             submit(){
+                this.content = $('.editormd-markdown-textarea').val()
                 var me = this
                 var obj = document.getElementById('exampleFormControlSelect'); //定位id
                 var index = obj.selectedIndex; // 选中索引
@@ -100,12 +120,12 @@
                     success: function(res){
                         me.msg = res.msg
                         me.msg_show = true
-                        setTimeout(function(){
-                            me.msg_show = false
-                            if(!res.code){
-                                window.history.go(-1)
-                            }
-                        }, 1000)
+                        // setTimeout(function(){
+                        //     me.msg_show = false
+                        //     if(!res.code){
+                        //         window.history.go(-1)
+                        //     }
+                        // }, 1000)
                     }
                 })
             },
