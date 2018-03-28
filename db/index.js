@@ -1,11 +1,12 @@
-var mysql=require("mysql");
+var mysql = require("mysql");
+const {db} = require('../config/index')
 var pool = mysql.createPool({
     waitForConnections:true,
     connectionLimit:2,
-    host     : '120.79.237.49',
-    user     : 'blog',
-    password : 'P2f5FAwZJA',
-    database : 'blog'
+    host     : db.host,
+    user     : db.user,
+    password : db.password,
+    database : db.database,
 });
 
 var query = function(sql, param, callback){

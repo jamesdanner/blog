@@ -28,7 +28,6 @@ app.use(function(req, res, next){
             Query('SELECT * FROM users WHERE user_id=?', [req.userInfo.user_id], function(err, doc){
                 req.userInfo.is_admin = Boolean(doc[0].is_admin)
             })
-            
         }catch(e){
         }
     }

@@ -2,15 +2,10 @@ const express = require('express')
 const router  = express.Router()
 const Query = require('../db/index')
 const util = require('../utils/index')
+const {client} = require('../config/index')
 const fs = require('fs');
 var co = require('co');
-var OSS = require('ali-oss');
-var client = new OSS({
-    region: 'oss-cn-shenzhen', 
-    accessKeyId: 'LTAIsjZnG8BgZeve', 
-    accessKeySecret: '4P5LFyj22YDiC8og5D0AJRyXJAEPw7',
-    bucket: 'e-lygpics'
-});
+
 
 
 let res_data = null;

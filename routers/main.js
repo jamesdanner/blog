@@ -48,7 +48,7 @@ router.get('/view', function(req, res){
                         LEFT JOIN users u ON c.user_id = u.user_id
                         WHERE content_id=?`
                         
-        Query(`UPDATE content SET views = ${data.content.views+=1} WHERE content_id = ? `, params, function(err, doc){})
+        Query(`UPDATE content SET views = views+1 WHERE content_id = ? `, params, function(err, doc){})
         Query(sql_com, params, function(err, com_doc){
             data.comments_list = com_doc
             res.render('main/view', data)
