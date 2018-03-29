@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>JamesFe</title>
+    <link rel="icon" href="/favicon.ico" type="image/ico"   />
     <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap-grid.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/public/style/main.css">
-    
 </head>
 <body>
     <div>
@@ -18,7 +18,7 @@
             <div class="tab">
                 <div class="container">
                     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-                        <a class="navbar-brand" href="/">新前端</a>
+                        <a class="navbar-brand" href="/">JAMESFE</a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
@@ -42,12 +42,20 @@
             </div>
             <div class="container article-list">
                 <div class="row">
+                    
                     <div class="col-12 col-md-8">
                         {% block content %}{%endblock%}
                     </div>
                     <div class="col-6 col-md-4" id="app">
+                        <div class="card info">
+                            <div class="card-body">
+                                <img src="https://avatars0.githubusercontent.com/u/8231955?s=460&v=4" alt="">
+                                <h5 class="card-title">james</h5>
+                                <p>不想做设计的程序猿不是好老师</p>
+                            </div>
+                        </div>
                         {% if !userInfo.user_id %}
-                        <div class="bg-white form card">
+                        <div class="bg-white form card"  style="margin-top: 20px">
                             <form>
                                 <div class="form-group">
                                     <div class="alert alert-danger" role="alert" v-if="tips_show" v-html="message"></div>
@@ -69,7 +77,7 @@
                             </form>
                         </div>
                         {% else %}
-                        <div class="card">
+                        <div class="card"  style="margin-top: 20px">
                             <div class="card-body">
                                 <h5 class="card-title">{{userInfo.username}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
@@ -77,10 +85,10 @@
                                 <p class="card-text">您是管理员用户 <a href="/admin">去后台管理</a></p>
                                 {% endif %}
                                 <a href="javascript: void(0)" class="card-link" @click="goOut">退出</a>
-                                <!-- <a href="#" class="card-link">Another link</a> -->
                             </div>
                         </div>
                         {% endif %}
+                        
                         <div class="card" style="margin-top: 20px;">
                             <div class="card-body">
                                 <h5 class="card-title">关联社区</h5>
