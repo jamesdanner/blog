@@ -3,6 +3,10 @@ const router  = express.Router()
 const Query = require('../db/index')
 const util = require('../utils/index')
 const {client} = require('../config/index')
+const multer = require('multer')
+const upload = multer({ dest: './tmp/' })
+
+
 const fs = require('fs');
 var co = require('co');
 
@@ -223,10 +227,84 @@ router.post('/content/add', function(req, res, next){
            
            
         }
-    });
-
-
-
-    
+    })
 })
+
+//文章更新
+router.post('/content/edit', function(req, res, next){
+    let {cat_id, title, description, content, cover_url, content_id} = req.body
+
+    var fileName = util.imgKey() + '.jpg';
+    // 构建图片路径
+    var filePath = __dirname + '/tmp/' + fileName;
+    //过滤data:URL
+    if(!cover_url){
+        res.end({code: 0, msg: "图片上传不能为空！"})
+    }
+    
+    var base64Data = cover_url.replace(/^data:image\/\w+;base64,/, "");
+    var dataBuffer = new Buffer(base64Data, 'base64');
+    fs.writeFile(filePath, dataBuffer, function(err) {
+        if(err){
+          res.end(JSON.stringify({status:"102",msg:"文件写入失败"})); 
+        }else{
+            var localFile = filePath;
+            var key = fileName;
+            //阿里云 上传文件 
+            co(function* () {
+                client.useBucket('e-lygpics');
+                var result = yield client.put(key, filePath);
+                var imageSrc = 'http://e-lygpics.oss-cn-shenzhen.aliyuncs.com/' + result.name;
+                var sql = 'UPDATE content SET title=?, description=?, content=?, cover_url=? WHERE content_id=?'
+                var param = [title, description, content, imageSrc, content_id]
+                Query(sql, param, function(err, rs){
+                    if(!err){
+                        res.json({
+                            msg: '更新成功！'
+                        })
+                        fs.unlinkSync(filePath)
+                        return
+                    }
+                    res.end(JSON.stringify({code: 0,msg:'上传失败',error: err},"utf-8"))
+                })
+            }).catch(function (err) {
+                res.end(JSON.stringify({code: 0,msg:'上传失败',error: err},"utf-8"))
+                fs.unlinkSync(filePath)
+            });
+           
+           
+        }
+    })
+})
+
+router.post('/content/img_up', upload.single('editormd-image-file'), (req, res, next) => {
+    let file = req.file
+    const new_file = file.path + '.jpg'
+    fs.rename(file.path, new_file, function(err){
+        if(err){
+            throw err;
+        }
+        co(function* () {
+            client.useBucket('e-lygpics')
+            let filePath = new_file
+            let key = file.filename + '.jpg'
+            var result = yield client.put(key, filePath);
+            var imageSrc = 'http://e-lygpics.oss-cn-shenzhen.aliyuncs.com/' + result.name;
+            res.json({
+                success : 1, 
+                message : "上传成功！",
+                url: imageSrc
+            })
+            fs.unlinkSync(new_file)
+        }).catch(function (err) {
+            res.end(JSON.stringify({success: 0,message:'上传失败', error:err},"utf-8"));
+            fs.unlinkSync(new_file)
+        });
+        
+    })
+       
+    
+  })
+
+
 module.exports = router

@@ -18,27 +18,24 @@
             </select>
             <div class="form-group">
                 <label for="exampleInputEmail1">标题</label>
-                <input type="text" class="form-control" v-model="title" value="{{content.title}}" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="text" class="form-control" v-model="title" value="{{content.title}}" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="请输入标题">
             </div>
             <div class="form-group" style="height: 300px;">
                 <label for="exampleInputEmail1">选择图片</label>
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" id="customFile" @change="change" accept=".gif,.jpg,.jpeg,.png">
-                    <label class="custom-file-label" for="customFile">Choose file</label>
+                    <label class="custom-file-label" for="customFile">选择图片</label>
                     <img :src="cover_url" alt="" style="display:block; width: 300px; height: 200px;">
                 </div>
             </div>
             <div class="form-group">
                 <label for="exampleInputPassword1">简介</label>
-                <input type="text" class="form-control" v-model="description" id="exampleInputPassword" placeholder="Password">
+                <input type="text" class="form-control" v-model="description" id="exampleInputPassword" placeholder="请输入简介">
             </div>
-            <!-- <div class="form-group">
-                <label for="exampleInputPassword1">内容</label>
-                <textarea type="text" class="form-control" v-model="content" id="exampleInputPassword" placeholder="Password"></textarea>
-            </div> -->
             <div id="editormd">
-                <textarea style="display:none;" >### Hello Editor.md !</textarea>
+                <textarea style="display:none;"></textarea>
             </div>
+           
             <button type="button" class="btn btn-primary" @click="submit">提交</button>
         </form>
     </div>
@@ -54,7 +51,7 @@
             //启动本地图片上传功能
             imageUpload: true,
             imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-            imageUploadURL : "{{url_for('main.upload')}}",
+            imageUploadURL : "/admin/content/img_up",
             path : "../../public/plug/editormd/lib/" // Autoload modules mode, codemirror, marked... dependents libs path
         });
     });
@@ -70,7 +67,9 @@
             content: '',
             url: '',
             cover_url: '',
-            content_mkd: ''
+            content_mkd: '',
+            is_add: true,
+            content_id: ''
         },
         methods: {
             change(e){
@@ -106,8 +105,10 @@
                     alert('内容不能为空');
                     return
                 }
+                
+                let URL = this.is_add ? '/admin/content/add' : '/admin/content/edit'
                 $.ajax({
-                    url: '/admin/content/add',
+                    url: URL,
                     type: 'post',
                     dataType: 'json',
                     data: {
@@ -115,17 +116,18 @@
                         title: me.title,
                         description: me.description,
                         content: me.content,
-                        cover_url: this.cover_url
+                        cover_url: me.cover_url,
+                        content_id: me.content_id
                     },
                     success: function(res){
                         me.msg = res.msg
                         me.msg_show = true
-                        // setTimeout(function(){
-                        //     me.msg_show = false
-                        //     if(!res.code){
-                        //         window.history.go(-1)
-                        //     }
-                        // }, 1000)
+                        setTimeout(function(){
+                            me.msg_show = false
+                            if(!res.code){
+                                window.history.go(-1)
+                            }
+                        }, 1000)
                     }
                 })
             },
@@ -170,7 +172,8 @@
         },
         mounted: function(){
             if(!window.location.search) return
-             var me = this
+            this.is_add = false
+            let me = this
             $.ajax({
                     url: '/admin/content/edit',
                     dataType: 'json',
@@ -182,7 +185,10 @@
                         me.title = res.data.title
                         me.description = res.data.description
                         me.content = res.data.content
+                        me.cover_url = res.data.cover_url
                         me.url = res.data.url
+                        me.content_id = res.data.content_id
+                        $('#editormd textarea').val(res.data.content)
                     }
 
                 })

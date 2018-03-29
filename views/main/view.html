@@ -9,8 +9,8 @@
             <span>阅读:{{content.views}}</span>
             <span>评论:{{comments_list.length}}</span>
         </p>
-        <div>
-            {{content.content}}
+        <div id="test-editormd-view">
+            <textarea style="display:none;" name="test-editormd-markdown-doc">{{content.content}}</textarea>               
         </div>
     </div>
     <div class="message-list">
@@ -51,8 +51,24 @@
        </div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
-    <script>
-    
+    <script src="../../public/plug/editormd/lib/marked.min.js"></script>
+    <script src="../../public/plug/editormd/lib/prettify.min.js"></script>
+    <script src="../../public/plug/editormd/lib/raphael.min.js"></script>
+    <script src="../../public/plug/editormd/lib/underscore.min.js"></script>
+    <script src="../../public/plug/editormd/lib/sequence-diagram.min.js"></script>
+    <script src="../../public/plug/editormd/lib/flowchart.min.js"></script>
+    <script src="../../public/plug/editormd/lib/jquery.flowchart.min.js"></script>
+    <script src="../../public/plug/editormd/editormd.js"></script>
+    <script type="text/javascript">
+        testEditormdView2 = editormd.markdownToHTML("test-editormd-view", {
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            emoji           : true,
+            taskList        : true,
+            tex             : true,  // 默认不解析
+            flowChart       : true,  // 默认不解析
+            sequenceDiagram : true,  // 默认不解析
+        });
+                
         $(function(){
             $('#sumbit').click(function(){
                 var $content = $('#content')
@@ -69,7 +85,6 @@
                         content_id: $content[0].dataset.id
                     },
                     success: function(res){
-                        
                         if(!res.code){
                             alert(res.msg)
                             window,location.reload()
